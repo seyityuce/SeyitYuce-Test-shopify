@@ -1,0 +1,208 @@
+{{ 'component-accordion.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .faq-section {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .faq-section__heading {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid rgba(var(--color-foreground), 0.08);
+  }
+
+  .faq-item:last-child {
+    border-bottom: none;
+  }
+
+  .faq-item details {
+    padding: 1.5rem 0;
+  }
+
+  .faq-item summary {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+    font-size: 1.1rem;
+    line-height: 1.4;
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-item summary::after {
+    content: '+';
+    font-size: 1.5rem;
+    font-weight: 300;
+    transition: transform 0.3s ease;
+  }
+
+  .faq-item details[open] summary::after {
+    transform: rotate(45deg);
+  }
+
+  .faq-item .faq-answer {
+    padding-top: 1rem;
+    color: rgba(var(--color-foreground), 0.75);
+    line-height: 1.6;
+  }
+{%- endstyle -%}
+
+<div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}">
+  <div class="page-width">
+    <div class="faq-section">
+      {%- if section.settings.heading != blank -%}
+        <div class="faq-section__heading">
+          <h2 class="h1">{{ section.settings.heading }}</h2>
+          {%- if section.settings.subheading != blank -%}
+            <p class="subtitle">{{ section.settings.subheading }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="faq-list">
+        {%- comment -%} Dynamic FAQ from product metafields {%- endcomment -%}
+        {%- if product.metafields.custom.faqs != blank -%}
+          {%- assign faq_data = product.metafields.custom.faqs.value -%}
+          {%- for faq_item in faq_data -%}
+            <div class="faq-item">
+              <details>
+                <summary>{{ faq_item.question }}</summary>
+                <div class="faq-answer rte">
+                  {% if faq_item.question == 'What sizes do you carry?' %}
+                    <p>
+                      {% for option in product.options_with_values %}
+                        {% if option.name == 'Size' %}
+                          We currently carry {{ option.values | join: ', ' }} sizes.
+                        {% endif %}
+                      {% endfor %}
+                    </p>
+                  {% else %}
+                    {{ faq_item.answer | metafield_tag }}
+                  {% endif %}
+                </div>
+              </details>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+
+        {%- comment -%} Static FAQ blocks {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'faq_item' -%}
+              <div class="faq-item" {{ block.shopify_attributes }}>
+                <details>
+                  <summary>{{ block.settings.question }}</summary>
+                  <div class="faq-answer rte">
+                    {{ block.settings.answer }}
+                  </div>
+                </details>
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+
+        {%- comment -%} Fallback message if no FAQs {%- endcomment -%}
+        {%- if product.metafields.custom.faqs == blank and section.blocks.size == 0 -%}
+          <div class="faq-item">
+            <p style="text-align: center; color: rgba(var(--color-foreground), 0.5);">
+              {{
+                section.settings.no_faq_message
+                | default: 'No frequently asked questions available for this product.'
+              }}
+            </p>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product FAQ",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Frequently Asked Questions",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "no_faq_message",
+      "default": "No frequently asked questions available for this product.",
+      "label": "No FAQ message"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

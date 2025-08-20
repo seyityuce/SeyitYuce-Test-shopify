@@ -1,0 +1,20 @@
+// /blogs/{title}
+{
+  "sections": {
+    "main": {
+      "type": "filtered-blogs",
+      "settings": {
+        "show_blog_description": true,
+        "layout": "grid",
+        "posts_per_page": 9,
+        "show_image": true,
+        "image_height": "medium",
+        "show_date": true,
+        "show_author": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    }
+  },
+  "order": ["main"]
+}

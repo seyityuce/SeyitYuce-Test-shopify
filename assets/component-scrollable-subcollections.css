@@ -1,0 +1,301 @@
+.scrollable-subcollection-container {
+  width: 100%;
+  margin: 2rem 0;
+  position: relative;
+}
+
+.scrollable-subcollection-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.scrollable-subcollection-nav {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0.5rem 0;
+  flex: 1;
+  cursor: grab;
+}
+
+.scrollable-subcollection-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollable-subcollection-nav:active {
+  cursor: grabbing;
+}
+
+.scrollable-subcollection-nav-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(var(--color-foreground), 0.05);
+  border: 1px solid rgba(var(--color-foreground), 0.1);
+  border-radius: 2rem;
+  color: rgb(var(--color-foreground));
+  text-decoration: none;
+  white-space: wrap;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-width: fit-content;
+  position: relative;
+  overflow: hidden;
+}
+
+.scrollable-subcollection-nav-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.scrollable-subcollection-nav-button:hover::before {
+  left: 100%;
+}
+
+.scrollable-subcollection-nav-button:hover {
+  background: rgba(var(--color-foreground), 0.1);
+  border-color: rgba(var(--color-foreground), 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.scrollable-subcollection-nav-button.active {
+  background: rgb(var(--color-foreground));
+  color: rgb(var(--color-background));
+  border-color: rgb(var(--color-foreground));
+  box-shadow: 0 4px 12px rgba(var(--color-foreground), 0.3);
+}
+
+.scrollable-subcollection-nav-button.active:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(var(--color-foreground), 0.4);
+}
+
+.scrollable-subcollection-nav-button__title {
+  /* position: relative; */
+  /* z-index: 1; */
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: wrap;
+  /* overflow: hidden; */
+  /* text-overflow: ellipsis; */
+}
+
+/* .button-text {
+  position: relative;
+  z-index: 1;
+} */
+
+/* .product-count {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  position: relative;
+  z-index: 1;
+} */
+
+.scroll-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgb(var(--color-background));
+  border: 1px solid rgba(var(--color-foreground), 0.1);
+  border-radius: 50%;
+  color: rgb(var(--color-foreground));
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.scroll-arrow:hover:not(:disabled) {
+  background: rgba(var(--color-foreground), 0.05);
+  border-color: rgba(var(--color-foreground), 0.2);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.scroll-arrow:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.scroll-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.scroll-arrow svg {
+  transition: transform 0.2s ease;
+}
+
+.scroll-arrow:hover:not(:disabled) svg {
+  transform: translateX(2px);
+}
+
+.scroll-arrow--left:hover:not(:disabled) svg {
+  transform: translateX(-2px);
+}
+
+/* Loading state */
+.scrollable-subcollection-nav.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.scrollable-subcollection-nav.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid rgba(var(--color-foreground), 0.3);
+  border-top: 2px solid rgb(var(--color-foreground));
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media screen and (max-width: 749px) {
+  .scrollable-subcollection-container {
+    margin: 1.5rem 0;
+  }
+
+  .scrollable-subcollection-wrapper {
+    gap: 0.5rem;
+  }
+
+  .scroll-arrow {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .scrollable-subcollection-nav {
+    gap: 0.5rem;
+  }
+
+  .scrollable-subcollection-nav-button {
+    padding: 0.5rem 1rem;
+    /* font-size: 0.8rem; */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .scrollable-subcollection-nav-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  .product-count {
+    font-size: 0.7rem;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .scrollable-subcollection-nav {
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+  }
+
+  .scrollable-subcollection-nav-button {
+    scroll-snap-align: start;
+  }
+
+  .scrollable-subcollection-nav-button:hover::before {
+    display: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .scrollable-subcollection-nav-button {
+    border-width: 2px;
+  }
+
+  .scroll-arrow {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .scrollable-subcollection-nav {
+    scroll-behavior: auto;
+  }
+
+  .scrollable-subcollection-nav-button,
+  .scroll-arrow {
+    transition: none;
+  }
+
+  .scrollable-subcollection-nav-button::before {
+    display: none;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+/* Focus styles for accessibility */
+.scrollable-subcollection-nav-button:focus-visible,
+.scroll-arrow:focus-visible {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 2px;
+}
+
+/* RTL support */
+[dir="rtl"] .scroll-arrow--left svg {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .scroll-arrow--right svg {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .scroll-arrow--left:hover:not(:disabled) svg {
+  transform: scaleX(-1) translateX(-2px);
+}
+
+[dir="rtl"] .scroll-arrow--right:hover:not(:disabled) svg {
+  transform: scaleX(-1) translateX(2px);
+}

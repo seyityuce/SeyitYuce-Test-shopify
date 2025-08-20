@@ -1,0 +1,73 @@
+{{ 'section-product-purchased-together.css' | asset_url | stylesheet_tag }}
+
+<div class="purchased-together-container">
+  <h3 class="purchased-together-title">People bought these items together</h3>
+  {% if product.metafields.custom.items_often_purchased_together != blank %}
+    <div class="purchased-together-slider" id="purchased-together-slider">
+      <button class="slider-nav prev" id="slider-prev" aria-label="Previous items">
+        <svg viewBox="0 0 24 24">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+      </button>
+      <div class="purchased-together-items" id="purchased-together-items">
+        {% for item in product.metafields.custom.items_often_purchased_together.value %}
+          <div class="purchased-together-item">
+            <div class="purchased-together-item__image">
+              {%- if item.featured_image -%}
+                <img
+                  src="{{ item.featured_image | image_url: width: 100 }}"
+                  alt="{{ item.title | escape }}"
+                  loading="lazy"
+                  height="100"
+                  width="100"
+                >
+              {%- endif -%}
+            </div>
+            <a href="{{ item.url }}" class="purchased-together-item__title">
+              {{ item.title }}
+            </a>
+            <span class="purchased-together-item__price">
+              {{ item.price | money }}
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+      <button class="slider-nav next" id="slider-next" aria-label="Next items">
+        <svg viewBox="0 0 24 24">
+          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+        </svg>
+      </button>
+    </div>
+  {% endif %}
+</div>
+
+<script src="{{ 'product-purchased-together.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Purchased Together",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Items Purchased Together",
+      "type": "items_purchased_together",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

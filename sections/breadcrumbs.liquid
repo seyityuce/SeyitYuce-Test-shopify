@@ -1,0 +1,121 @@
+{{ 'component-breadcrumbs.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'breadcrumbs.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="breadcrumb-section section-{{ section.id }}-padding color-{{ section.settings.color_scheme }} gradient">
+  <div class="page-width">
+    {% render 'breadcrumbs',
+      show_home: section.settings.show_home,
+      separator: section.settings.separator,
+      class: section.settings.breadcrumb_style
+    %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Breadcrumbs",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_home",
+      "default": true,
+      "label": "Show home link"
+    },
+    {
+      "type": "select",
+      "id": "separator",
+      "options": [
+        {
+          "value": "/",
+          "label": "Forward slash (/)"
+        },
+        {
+          "value": ">",
+          "label": "Greater than (>)"
+        },
+        {
+          "value": "→",
+          "label": "Arrow (→)"
+        },
+        {
+          "value": "•",
+          "label": "Bullet (•)"
+        }
+      ],
+      "default": "/",
+      "label": "Separator"
+    },
+    {
+      "type": "select",
+      "id": "breadcrumb_style",
+      "options": [
+        {
+          "value": "",
+          "label": "Default"
+        },
+        {
+          "value": "breadcrumb--compact",
+          "label": "Compact"
+        },
+        {
+          "value": "breadcrumb--large",
+          "label": "Large"
+        }
+      ],
+      "default": "",
+      "label": "Style"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Breadcrumbs"
+    }
+  ]
+}
+{% endschema %}

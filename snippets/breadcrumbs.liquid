@@ -1,0 +1,173 @@
+{% comment %}
+  Breadcrumb navigation component
+  Accepts:
+  - show_home: boolean - whether to show home link (default: true)
+  - separator: string - separator between breadcrumb items (default: '/')
+  - class: string - additional CSS classes
+{% endcomment %}
+
+{%- liquid
+  assign show_home = show_home | default: true
+  assign separator = separator | default: '/'
+  assign breadcrumb_class = class | default: ''
+-%}
+
+{%- capture breadcrumb_items -%}
+  {%- if show_home -%}
+    <li class="breadcrumb__item">
+      <a href="{{ routes.root_url }}" class="breadcrumb__link">
+        {{ 'general.breadcrumbs.home' | t }}
+      </a>
+    </li>
+  {%- endif -%}
+
+  {%- case template.name -%}
+    {%- when 'collection' -%}
+      {%- liquid
+        # Check for parent collection via metafields
+        assign parent_collection_handle = collection.metafields.custom.parent_collection.value
+        assign breadcrumb_path = collection.metafields.custom.breadcrumb_path.value
+        
+        # If breadcrumb_path metafield exists, use it for full hierarchy
+        if breadcrumb_path != blank
+          assign path_items = breadcrumb_path | split: '|'
+          for path_item in path_items
+            assign item_parts = path_item | split: ':'
+            if item_parts.size == 2
+              assign item_handle = item_parts[0]
+              assign item_collection = collections[item_handle]
+              if item_collection
+                echo '<li class="breadcrumb__item">'
+                echo '<a href="' | append: item_collection.url | append: '" class="breadcrumb__link">'
+                echo item_collection.title | escape
+                echo '</a>'
+                echo '</li>'
+              endif
+            endif
+          endfor
+        elsif parent_collection_handle != blank
+          # Fallback to single parent collection
+          assign parent_collection = collections[parent_collection_handle]
+          if parent_collection
+            echo '<li class="breadcrumb__item">'
+            echo '<a href="' | append: parent_collection.url | append: '" class="breadcrumb__link">'
+            echo parent_collection.title | escape
+            echo '</a>'
+            echo '</li>'
+          endif
+        else
+          # Default fallback - show "Collections" link
+          echo '<li class="breadcrumb__item">'
+          echo '<a href="/collections" class="breadcrumb__link">'
+          echo 'general.breadcrumbs.collections' | t
+          echo '</a>'
+          echo '</li>'
+        endif
+      -%}
+      
+      <li class="breadcrumb__item breadcrumb__item--current">
+        <span class="breadcrumb__text">{{ collection.title | escape }}</span>
+      </li>
+
+    {%- when 'product' -%}
+      {%- liquid
+        # Get the collection context from URL or first collection
+        assign current_collection = collections[collection.handle] | default: product.collections.first
+        
+        if current_collection
+          # Check for parent collection hierarchy
+          assign parent_collection_handle = current_collection.metafields.custom.parent_collection.value
+          assign breadcrumb_path = current_collection.metafields.custom.breadcrumb_path.value
+          
+          # Build collection hierarchy
+          if breadcrumb_path != blank
+            assign path_items = breadcrumb_path | split: '|'
+            for path_item in path_items
+              assign item_parts = path_item | split: ':'
+              if item_parts.size == 2
+                assign item_handle = item_parts[0]
+                assign item_collection = collections[item_handle]
+                if item_collection
+                  echo '<li class="breadcrumb__item">'
+                  echo '<a href="' | append: item_collection.url | append: '" class="breadcrumb__link">'
+                  echo item_collection.title | escape
+                  echo '</a>'
+                  echo '</li>'
+                endif
+              endif
+            endfor
+          elsif parent_collection_handle != blank
+            assign parent_collection = collections[parent_collection_handle]
+            if parent_collection
+              echo '<li class="breadcrumb__item">'
+              echo '<a href="' | append: parent_collection.url | append: '" class="breadcrumb__link">'
+              echo parent_collection.title | escape
+              echo '</a>'
+              echo '</li>'
+            endif
+          else
+            echo '<li class="breadcrumb__item">'
+            echo '<a href="/collections" class="breadcrumb__link">'
+            echo 'general.breadcrumbs.collections' | t
+            echo '</a>'
+            echo '</li>'
+          endif
+          
+          # Current collection
+          echo '<li class="breadcrumb__item">'
+          echo '<a href="' | append: current_collection.url | append: '" class="breadcrumb__link">'
+          echo current_collection.title | escape
+          echo '</a>'
+          echo '</li>'
+        else
+          # Fallback if no collection context
+          echo '<li class="breadcrumb__item">'
+          echo '<a href="/collections" class="breadcrumb__link">'
+          echo 'general.breadcrumbs.collections' | t
+          echo '</a>'
+          echo '</li>'
+        endif
+      -%}
+      
+      <li class="breadcrumb__item breadcrumb__item--current">
+        <span class="breadcrumb__text">{{ product.title | escape }}</span>
+      </li>
+
+    {%- when 'blog' -%}
+      <li class="breadcrumb__item">
+        <a href="{{ blog.url }}" class="breadcrumb__link">{{ blog.title | escape }}</a>
+      </li>
+
+    {%- when 'article' -%}
+      <li class="breadcrumb__item">
+        <a href="{{ blog.url }}" class="breadcrumb__link">{{ blog.title | escape }}</a>
+      </li>
+      <li class="breadcrumb__item breadcrumb__item--current">
+        <span class="breadcrumb__text">{{ article.title | escape }}</span>
+      </li>
+
+    {%- when 'page' -%}
+      <li class="breadcrumb__item breadcrumb__item--current">
+        <span class="breadcrumb__text">{{ page.title | escape }}</span>
+      </li>
+
+    {%- when 'search' -%}
+      <li class="breadcrumb__item breadcrumb__item--current">
+        <span class="breadcrumb__text">{{ 'general.search.search' | t }}</span>
+      </li>
+
+  {%- endcase -%}
+{%- endcapture -%}
+
+{%- if breadcrumb_items != blank -%}
+  <nav
+    class="breadcrumb {{ breadcrumb_class }}"
+    role="navigation"
+    aria-label="{{ 'general.breadcrumbs.navigation' | t }}"
+    data-separator="{{ separator }}"
+  >
+    <ol class="breadcrumb__list">
+      {{ breadcrumb_items }}
+    </ol>
+  </nav>
+{%- endif -%}

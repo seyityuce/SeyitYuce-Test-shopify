@@ -1,0 +1,167 @@
+/* Breadcrumb Navigation Component */
+.breadcrumb {
+  margin: 0;
+  padding: 1rem 0;
+  font-size: 1.4rem;
+  line-height: 1.5;
+}
+
+.breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0.5rem;
+}
+
+.breadcrumb__item {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.breadcrumb__item:not(:last-child)::after {
+  content: '/';
+  margin-left: 0.5rem;
+  color: rgba(var(--color-foreground), 0.5);
+  font-weight: normal;
+}
+
+/* Dynamic separator support */
+.breadcrumb[data-separator="/"] .breadcrumb__item:not(:last-child)::after { content: '/'; }
+.breadcrumb[data-separator=">"] .breadcrumb__item:not(:last-child)::after { content: '>'; }
+.breadcrumb[data-separator="→"] .breadcrumb__item:not(:last-child)::after { content: '→'; }
+.breadcrumb[data-separator="•"] .breadcrumb__item:not(:last-child)::after { content: '•'; }
+
+.breadcrumb__link {
+  color: rgba(var(--color-foreground), 0.75);
+  text-decoration: none;
+  transition: color var(--duration-short) ease;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.breadcrumb__link:hover,
+.breadcrumb__link:focus {
+  color: rgb(var(--color-foreground));
+  text-decoration: underline;
+  outline: none;
+}
+
+.breadcrumb__link:focus-visible {
+  outline: var(--focused-base-outline);
+  outline-offset: var(--focused-base-outline-offset);
+  box-shadow: var(--focused-base-box-shadow);
+}
+
+.breadcrumb__text {
+  color: rgb(var(--color-foreground));
+  font-weight: 500;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+.breadcrumb__item--current .breadcrumb__text {
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 749px) {
+  .breadcrumb {
+    padding: 0.8rem 0;
+    font-size: 1.3rem;
+  }
+  
+  .breadcrumb__list {
+    gap: 0.4rem;
+  }
+  
+  .breadcrumb__item:not(:last-child)::after {
+    margin-left: 0.4rem;
+  }
+  
+  /* Truncate long breadcrumb items on mobile */
+  .breadcrumb__link,
+  .breadcrumb__text {
+    max-width: 15rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Show full text for current item */
+  .breadcrumb__item--current .breadcrumb__text {
+    max-width: none;
+    white-space: normal;
+    word-break: break-word;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .breadcrumb {
+    font-size: 1.2rem;
+  }
+  
+  .breadcrumb__link,
+  .breadcrumb__text {
+    max-width: 12rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .breadcrumb__link {
+    color: rgb(var(--color-foreground));
+  }
+  
+  .breadcrumb__item:not(:last-child)::after {
+    color: rgb(var(--color-foreground));
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .breadcrumb__link {
+    transition: none;
+  }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .breadcrumb__link {
+    color: rgba(var(--color-foreground), 0.8);
+  }
+}
+
+/* Breadcrumb variants */
+.breadcrumb--compact {
+  padding: 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.breadcrumb--large {
+  padding: 1.5rem 0;
+  font-size: 1.6rem;
+}
+
+/* Integration with page layout */
+.breadcrumb + .collection-hero,
+.breadcrumb + .product {
+  margin-top: 0;
+}
+
+/* Accessibility improvements */
+.breadcrumb__link:focus {
+  outline: 2px solid rgb(var(--color-foreground));
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .breadcrumb {
+    display: none;
+  }
+}

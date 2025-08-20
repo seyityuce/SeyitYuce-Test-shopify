@@ -1,0 +1,192 @@
+{{ 'component-scrollable-subcollections.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'scrollable-subcollections.js' | asset_url }}" defer="defer"></script>
+
+<div class="page-width">
+  {%- liquid
+    case section.settings.sort
+      when 'products_high', 'products_low'
+        assign collections = collections | sort: 'all_products_count'
+      when 'date', 'date_reversed'
+        assign collections = collections | sort: 'published_at'
+    endcase
+
+    if section.settings.sort == 'products_high' or section.settings.sort == 'date_reversed' or section.settings.sort == 'alphabetical_reversed'
+      assign collections = collections | reverse
+    endif
+
+    assign modulo_result = 28 | modulo: section.settings.columns_desktop
+    assign paginate_by = 30
+    if modulo_result == 0
+      assign paginate_by = 28
+    endif
+  -%}
+
+  {%- paginate collections by paginate_by -%}
+    {% assign current_handle = collection.handle %}
+
+    <scrollable-subcollections class="scrollable-subcollection-container">
+      <div class="scrollable-subcollection-wrapper">
+        {% if section.settings.show_arrows %}
+          <button class="scroll-arrow scroll-arrow--left" aria-label="Scroll left" disabled>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        {% endif %}
+
+        <div class="scrollable-subcollection-nav" data-auto-scroll="true">
+          {% if current_handle == 'men' %}
+            {% for sub in collections %}
+              {% if sub.handle contains 'men' and sub.handle != 'men' and sub.handle != 'women' %}
+                {% unless sub.handle contains 'women' %}
+                  <a href="{{ sub.url }}" class="scrollable-subcollection-nav-button">
+                    <img
+                      src="{{ sub.featured_image | image_url: width: 300 }}"
+                      alt="{{ sub.image.alt | escape }}"
+                      loading="lazy"
+                      width="100"
+                      height="100"
+                    >
+                    <p class="scrollable-subcollection-nav-button__title">
+                      {{ sub.title }}
+                    </p>
+                  </a>
+                {% endunless %}
+              {% endif %}
+            {% endfor %}
+          {% elsif current_handle == 'women' %}
+            {% for sub in collections %}
+              {% if sub.handle contains 'women' and sub.handle != 'women' %}
+                <a href="{{ sub.url }}" class="scrollable-subcollection-nav-button">
+                  <img
+                    src="{{ sub.featured_image | image_url: width: 300 }}"
+                    alt="{{ sub.image.alt | escape }}"
+                    loading="lazy"
+                    width="100"
+                    height="100"
+                  >
+                  <p class="scrollable-subcollection-nav-button__title">
+                    {{ sub.title }}
+                  </p>
+                </a>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        {% if section.settings.show_arrows %}
+          <button class="scroll-arrow scroll-arrow--right" aria-label="Scroll right">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        {% endif %}
+      </div>
+    </scrollable-subcollections>
+
+    {% render 'pagination', paginate: paginate %}
+  {%- endpaginate -%}
+</div>
+{% schema %}
+{
+  "name": "t:sections.main-list-collections.name",
+  "class": "section",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "t:sections.main-list-collections.settings.title.label",
+      "default": "t:sections.main-list-collections.settings.title.default"
+    },
+    {
+      "type": "select",
+      "id": "sort",
+      "options": [
+        {
+          "value": "alphabetical",
+          "label": "t:sections.main-list-collections.settings.sort.options__1.label"
+        },
+        {
+          "value": "alphabetical_reversed",
+          "label": "t:sections.main-list-collections.settings.sort.options__2.label"
+        },
+        {
+          "value": "date_reversed",
+          "label": "t:sections.main-list-collections.settings.sort.options__3.label"
+        },
+        {
+          "value": "date",
+          "label": "t:sections.main-list-collections.settings.sort.options__4.label"
+        },
+        {
+          "value": "products_high",
+          "label": "t:sections.main-list-collections.settings.sort.options__5.label"
+        },
+        {
+          "value": "products_low",
+          "label": "t:sections.main-list-collections.settings.sort.options__6.label"
+        }
+      ],
+      "default": "alphabetical",
+      "label": "t:sections.main-list-collections.settings.sort.label"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:sections.main-list-collections.settings.image_ratio.options__1.label"
+        },
+        {
+          "value": "portrait",
+          "label": "t:sections.main-list-collections.settings.image_ratio.options__2.label"
+        },
+        {
+          "value": "square",
+          "label": "t:sections.main-list-collections.settings.image_ratio.options__3.label"
+        }
+      ],
+      "default": "adapt",
+      "label": "t:sections.main-list-collections.settings.image_ratio.label"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3,
+      "label": "t:sections.main-list-collections.settings.columns_desktop.label"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "t:sections.main-list-collections.settings.columns_mobile.options__1.label"
+        },
+        {
+          "value": "2",
+          "label": "t:sections.main-list-collections.settings.columns_mobile.options__2.label"
+        }
+      ],
+      "default": "2",
+      "label": "t:sections.main-list-collections.settings.columns_mobile.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "Show product count",
+      "default": false
+    }
+  ]
+}
+{% endschema %}
